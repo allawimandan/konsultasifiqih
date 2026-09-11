@@ -1,7 +1,5 @@
 {
-  "_catatan": "Isi dua nilai di bawah setelah repositori GitHub dan OAuth worker dibuat. Lihat README.md bagian 'Menulis lewat peramban'.",
-
-  "repo_github": "GANTI-USERNAME/konsultasifiqih",
+  "repo_github": "allawimandan/konsultasifiqih",
   "cabang": "main",
-  "oauth_base_url": "https://GANTI-NAMA.workers.dev"
+  "oauth_base_url": "https://konsultasifiqih-oauth.ajengansubang.workers.dev"
 }

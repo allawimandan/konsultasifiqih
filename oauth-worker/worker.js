@@ -9,10 +9,15 @@
  *   /auth      -> melempar pengguna ke halaman izin GitHub
  *   /callback  -> menukar kode jadi token, lalu menyerahkannya ke Decap
  *
- * Dua variabel rahasia yang wajib diisi di Cloudflare (Settings -> Variables):
- *   GITHUB_CLIENT_ID
+ * Yang wajib diisi di Cloudflare (Settings -> Variables) hanya SATU:
  *   GITHUB_CLIENT_SECRET
+ *
+ * Client ID tidak rahasia (ikut terlihat di URL izin GitHub), jadi ditulis
+ * langsung di bawah sebagai nilai bawaan. Kalau suatu saat OAuth App-nya
+ * diganti, cukup timpa dengan variabel GITHUB_CLIENT_ID di Cloudflare.
  */
+
+const CLIENT_ID_BAWAAN = 'Ov23lig3H42CSazMXxJL';
 
 const IZIN_GITHUB = 'https://github.com/login/oauth/authorize';
 const TOKEN_GITHUB = 'https://github.com/login/oauth/access_token';
@@ -20,16 +25,17 @@ const TOKEN_GITHUB = 'https://github.com/login/oauth/access_token';
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const clientId = env.GITHUB_CLIENT_ID || CLIENT_ID_BAWAAN;
 
-    if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
-      return teks('Worker belum diberi GITHUB_CLIENT_ID dan GITHUB_CLIENT_SECRET.', 500);
+    if (!clientId || !env.GITHUB_CLIENT_SECRET) {
+      return teks('Worker belum diberi GITHUB_CLIENT_SECRET.', 500);
     }
 
     if (url.pathname === '/auth') {
       // state dipakai untuk memastikan callback berasal dari permintaan ini
       const state = crypto.randomUUID();
       const tujuan = new URL(IZIN_GITHUB);
-      tujuan.searchParams.set('client_id', env.GITHUB_CLIENT_ID);
+      tujuan.searchParams.set('client_id', clientId);
       tujuan.searchParams.set('redirect_uri', url.origin + '/callback');
       tujuan.searchParams.set('scope', url.searchParams.get('scope') || 'repo,user');
       tujuan.searchParams.set('state', state);
@@ -63,7 +69,7 @@ export default {
             'User-Agent': 'konsultasifiqih-cms',
           },
           body: JSON.stringify({
-            client_id: env.GITHUB_CLIENT_ID,
+            client_id: clientId,
             client_secret: env.GITHUB_CLIENT_SECRET,
             code: kode,
             redirect_uri: url.origin + '/callback',
