@@ -807,34 +807,45 @@ def buat_pengalihan():
     Semua ditulis eksplisit — pola bebas seperti /:induk/:anak/ berisiko
     menutupi halaman asli seperti /kategori/hikmah/ atau /blog/2/.
     """
-    baris = [
-        "# URL lama WordPress -> susunan baru",
+    # Aturan tanpa pola. Cloudflare membatasi 2.000 aturan statis.
+    statis = [
         "/about/  /tentang-kami/  301",
         "/kirim-pertanyaan/  /kontak/  301",
         "/sitemap/  /arsip/  301",
         "/feed/  /feed.xml  301",
         "/home/  /  301",
+    ]
+
+    # halaman lampiran gambar: /nama-artikel/nama-gambar/ -> artikel induknya
+    berkas_lampiran = os.path.join(ARSIP, "lampiran.json")
+    if os.path.exists(berkas_lampiran):
+        for induk, anak in sorted(tuple(x) for x in
+                                  json.load(open(berkas_lampiran, encoding="utf-8"))):
+            statis.append("/%s/%s/  /%s/  301" % (induk, anak, induk))
+
+    # Aturan berpola. Batasnya cuma 100, dan Cloudflare mensyaratkan aturan
+    # statis ditulis LEBIH DULU — kalau dibalik, semua aturan di bawah aturan
+    # berpola pertama ikut dihitung dinamis dan deploy ditolak.
+    dinamis = [
         "/category/*  /kategori/:splat  301",
         "/tag/*  /blog/  301",
         "/author/*  /tentang-kami/  301",
         "/page/*  /blog/  301",
     ]
     for t in range(2014, 2028):
-        baris.append("/%d/*  /arsip/  301" % t)
+        dinamis.append("/%d/*  /arsip/  301" % t)
 
-    # halaman lampiran gambar: /nama-artikel/nama-gambar/ -> artikel induknya
-    berkas_lampiran = os.path.join(ARSIP, "lampiran.json")
-    lampiran = []
-    if os.path.exists(berkas_lampiran):
-        lampiran = [tuple(x) for x in json.load(open(berkas_lampiran, encoding="utf-8"))]
-    if lampiran:
-        baris.append("")
-        baris.append("# halaman lampiran gambar -> artikel induknya")
-        for induk, anak in sorted(lampiran):
-            baris.append("/%s/%s/  /%s/  301" % (induk, anak, induk))
+    if len(statis) > 2000 or len(dinamis) > 100:
+        raise SystemExit("Batas _redirects terlampaui: %d statis, %d dinamis"
+                         % (len(statis), len(dinamis)))
+
+    baris = (["# URL lama WordPress -> susunan baru.",
+              "# Aturan statis wajib di atas, aturan berpola di bawah.",
+              "", "# --- statis (%d) ---" % len(statis)] + statis +
+             ["", "# --- berpola (%d) ---" % len(dinamis)] + dinamis)
 
     tulis("_redirects", "\n".join(baris) + "\n")
-    return len(baris)
+    return len(statis), len(dinamis)
 
 
 def salin_aset():
