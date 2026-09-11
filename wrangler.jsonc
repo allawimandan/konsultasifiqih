@@ -4,13 +4,17 @@
   "name": "konsultasifiqih",
   "compatibility_date": "2026-09-11",
 
-  // Domain dipasang otomatis saat deploy — tidak perlu diklik di dasbor.
-  // Catatan: custom domain TIDAK BISA dibuat di hostname yang masih punya
-  // record CNAME/A sendiri. CNAME "www" lama sudah dihapus 2026-09-12.
-  "routes": [
-    { "pattern": "konsultasifiqih.com", "custom_domain": true },
-    { "pattern": "www.konsultasifiqih.com", "custom_domain": true }
-  ],
+  // TIDAK ADA "routes" di sini — disengaja.
+  //
+  // Custom domain konsultasifiqih.com sudah terpasang lewat deploy pertama.
+  // Pada deploy berikutnya wrangler justru menolak dengan
+  //   "Can't deploy routes that are assigned to another worker.
+  //    'null' is already assigned to routes: konsultasifiqih.com"
+  // karena custom domain yang sudah ada terbaca sebagai milik worker lain.
+  //
+  // Dokumentasi Cloudflare: "To manage routes via the Cloudflare dashboard
+  // only, remove any route and routes keys from your Wrangler configuration
+  // file." Jadi domain diurus dari dasbor, dan deploy tidak lagi gagal.
 
   "assets": {
     // hasil "python bangun_situs.py"
