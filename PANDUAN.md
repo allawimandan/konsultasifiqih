@@ -120,31 +120,19 @@ Klik **Deploy**. Build pertama makan waktu 1–3 menit.
 > Secrets* → tambah variabel `PYTHON_VERSION` berisi `3.13.3`, lalu *Retry
 > deployment*.
 
-### 2.3 Pindahkan domainnya
+### 2.3 Pasang domain
 
-Kalau sebelumnya Anda sudah membuat proyek Pages dari unggahan ZIP, domainnya
-masih menempel di proyek lama. Lepas dulu:
+Lewat dasbor: Worker `konsultasifiqih` → tab **Domains** → **+ Add Domain** →
+klik baris `konsultasifiqih.com` → tentukan hostname-nya.
 
-**Sudah terpasang** — tidak lewat dasbor, melainkan dideklarasikan di
-`wrangler.jsonc` sehingga ikut dipasang tiap kali deploy:
+**JANGAN pasang lewat `routes` di `wrangler.jsonc`.** Cara itu berhasil sekali
+lalu mengunci semua deploy berikutnya dengan galat *"Can't deploy routes that
+are assigned to another worker — 'null' is already assigned"*, dan situs diam-diam
+berhenti menerima pembaruan. Kunci `routes` sudah dihapus dari wrangler; domain
+diurus dari dasbor saja.
 
-```jsonc
-"routes": [
-  { "pattern": "konsultasifiqih.com", "custom_domain": true }
-]
-```
-
-Efek samping yang normal: begitu `routes` diisi, Wrangler mematikan alamat
-`*.workers.dev`. Situs hanya dilayani lewat domain aslinya.
-
-**`www` belum ikut** karena custom domain tidak bisa dibuat di hostname yang
-masih punya record CNAME. Hapus dulu CNAME `www` di **DNS**, lalu buka
-komentar baris `www` di `wrangler.jsonc` dan push.
-
-Cloudflare mengurus DNS dan sertifikat HTTPS sendiri.
-
-**Berhasil kalau:** `https://konsultasifiqih.com` membuka situsnya, bukan
-halaman "Account Suspended".
+**Berhasil kalau:** `https://konsultasifiqih.com` membuka situsnya.
+✅ Apex sudah terpasang. `www` menyusul (opsional).
 
 > Sampai di sini situs Anda **sudah hidup dan sudah bisa ditambah artikel**
 > lewat GitHub (lihat Bagian 6B). Bagian 3–5 hanya untuk mendapat editor yang
@@ -152,7 +140,7 @@ halaman "Account Suspended".
 
 ---
 
-## Bagian 3 — Daftarkan OAuth App di GitHub (5 menit) ← BERIKUTNYA
+## Bagian 3 — Daftarkan OAuth App di GitHub ✅ SELESAI
 
 Langkah ini dan berikutnya dibutuhkan karena GitHub **tidak mengizinkan login
 dilakukan murni dari peramban** — harus ada server kecil yang memegang rahasia.
@@ -195,11 +183,13 @@ Simpan keduanya sementara di Notepad.
 
 ---
 
-## Bagian 4 — Pasang Worker untuk login (10 menit)
+## Bagian 4 — Pasang Worker untuk login ← DI SINI SEKARANG
 
 ### 4.1 Buat Worker
 
-1. Cloudflare → **Workers & Pages** → **Create** → tab **Workers**
+1. Cloudflare → **Workers & Pages** → **Create application** →
+   pilih **Start with Hello World!** (bukan *Continue with GitHub* —
+   worker ini berdiri sendiri, tidak tersambung repositori)
 2. Beri nama persis: `konsultasifiqih-oauth`
 3. **Deploy** (isinya masih contoh bawaan, tidak apa-apa)
 4. Klik **Edit code**
@@ -211,8 +201,8 @@ Simpan keduanya sementara di Notepad.
 `https://konsultasifiqih-oauth.ajengansubang.workers.dev` di peramban
 menampilkan tulisan *"Server OAuth Decap CMS untuk konsultasifiqih.com."*
 
-Kalau yang muncul *"Worker belum diberi GITHUB_CLIENT_ID…"*, berarti Worker-nya
-sudah benar — tinggal isi rahasianya di langkah berikut.
+Kalau yang muncul *"Worker belum diberi GITHUB_CLIENT_SECRET."*, berarti
+Worker-nya sudah benar — tinggal isi rahasianya di langkah berikut.
 
 ### 4.2 Isi dua rahasia
 
@@ -221,8 +211,10 @@ sudah benar — tinggal isi rahasianya di langkah berikut.
 
 | Nama variabel | Isi |
 |---|---|
-| `GITHUB_CLIENT_ID` | Client ID dari langkah 3.2 |
 | `GITHUB_CLIENT_SECRET` | Client Secret dari langkah 3.2 |
+
+Hanya satu. Client ID (`Ov23lig3H42CSazMXxJL`) sudah ditanam di `worker.js`
+karena memang tidak rahasia — ikut terlihat di URL izin GitHub.
 
 3. **Deploy** / **Save** supaya berlaku
 
@@ -231,7 +223,7 @@ sudah benar — tinggal isi rahasianya di langkah berikut.
 
 ---
 
-## Bagian 5 — Hubungkan editornya (5 menit)
+## Bagian 5 — Hubungkan editornya ✅ SELESAI (situs.json sudah diisi)
 
 ### 5.1 Sunting situs.json
 
