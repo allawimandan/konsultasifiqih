@@ -1,0 +1,11 @@
+Folder ini tempat menulis artikel baru.
+
+  py artikel_baru.py "Judul Artikel"   -> membuat draf .md di sini
+  py bangun_situs.py                   -> membangun ulang situs
+  py paketkan.py                       -> membungkus jadi ZIP untuk Cloudflare
+
+Taruh gambar artikel di folder gambar/, lalu tulis nama berkasnya
+pada baris "gambar:" di kepala artikel.
+
+Berkas .md yang namanya diawali garis bawah (_) diabaikan.
+Artikel dengan "draf: ya" tidak ikut diterbitkan.

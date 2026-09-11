@@ -1,0 +1,9 @@
+# Dipakai kalau menyebarkan Worker lewat CLI:  npx wrangler deploy
+# Kalau lewat dasbor Cloudflare, berkas ini tidak diperlukan.
+name = "konsultasifiqih-oauth"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Jangan tulis client secret di sini. Isi lewat:
+#   npx wrangler secret put GITHUB_CLIENT_ID
+#   npx wrangler secret put GITHUB_CLIENT_SECRET
