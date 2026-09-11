@@ -79,7 +79,7 @@ folder `data/`, `sumber/`, `tulisan/`, dan `README.md`.
 
 ---
 
-## Bagian 2 — Sambungkan ke Cloudflare ✅ SELESAI (tinggal pasang domain)
+## Bagian 2 — Sambungkan ke Cloudflare ✅ SELESAI
 
 Bagian ini menggantikan cara unggah ZIP. Setelah ini, setiap perubahan di
 GitHub otomatis membangun ulang situs.
@@ -125,12 +125,21 @@ Klik **Deploy**. Build pertama makan waktu 1–3 menit.
 Kalau sebelumnya Anda sudah membuat proyek Pages dari unggahan ZIP, domainnya
 masih menempel di proyek lama. Lepas dulu:
 
-Buka Worker `konsultasifiqih` → **Settings** → **Domains & Routes** →
-**Add** → *Custom domain* → isi `konsultasifiqih.com`. Ulangi untuk
-`www.konsultasifiqih.com`.
+**Sudah terpasang** — tidak lewat dasbor, melainkan dideklarasikan di
+`wrangler.jsonc` sehingga ikut dipasang tiap kali deploy:
 
-Di akun Anda belum ada proyek Pages lama, jadi tidak ada domain yang perlu
-dilepas lebih dulu.
+```jsonc
+"routes": [
+  { "pattern": "konsultasifiqih.com", "custom_domain": true }
+]
+```
+
+Efek samping yang normal: begitu `routes` diisi, Wrangler mematikan alamat
+`*.workers.dev`. Situs hanya dilayani lewat domain aslinya.
+
+**`www` belum ikut** karena custom domain tidak bisa dibuat di hostname yang
+masih punya record CNAME. Hapus dulu CNAME `www` di **DNS**, lalu buka
+komentar baris `www` di `wrangler.jsonc` dan push.
 
 Cloudflare mengurus DNS dan sertifikat HTTPS sendiri.
 
