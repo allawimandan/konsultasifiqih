@@ -6,7 +6,7 @@ Panduan ini ditulis untuk komputer Anda apa adanya. Yang sudah dicek:
 |---|---|
 | Git | **terpasang** (versi 2.49.0) |
 | Git Credential Manager | **ada** — `git push` cukup login lewat peramban, tidak perlu token |
-| Identitas Git | **belum diatur** — dikerjakan di Bagian 0 |
+| Identitas Git | **sudah diatur** (`allawimandan` / ajengansubang@gmail.com) |
 | GitHub CLI (`gh`) | tidak ada — tidak dipakai di panduan ini |
 | Python di Cloudflare | tersedia 3.13.3 + pip, sama dengan komputer ini |
 
@@ -15,40 +15,44 @@ Perkiraan waktu: **40–60 menit**, sudah termasuk menunggu propagasi.
 Nama tombol di GitHub dan Cloudflare kadang bergeser sedikit. Kalau tulisan di
 layar tidak persis sama, cari yang maknanya sama — alurnya tetap.
 
+> **Satu-satunya kata yang masih harus Anda ganti sendiri adalah
+> `NAMA-AKUN-CF`** (subdomain workers.dev akun Cloudflare Anda, muncul mulai
+> Bagian 3). Selain itu, semua perintah sudah terisi dan bisa disalin apa
+> adanya.
+
 ---
 
-## Bagian 0 — Persiapan (5 menit)
+## Bagian 0 — Persiapan ✅ SELESAI
 
 ### 0.1 Akun GitHub
 
-Kalau belum punya, daftar di `github.com` → *Sign up*. Gratis. Catat
-**username**-nya, nanti dipakai berkali-kali. Di panduan ini ditulis
-`NAMA-ANDA` — ganti dengan username Anda.
+Sudah ada: **`allawimandan`**. Username ini sudah diisikan ke seluruh
+perintah di bawah, jadi blok perintahnya bisa disalin apa adanya.
 
 ### 0.2 Kenalkan identitas ke Git
 
-Buka Command Prompt, jalankan dua baris ini (ganti isinya):
+Sudah dikerjakan. Nilainya sekarang:
 
 ```bash
-git config --global user.name "Nama Anda"
-git config --global user.email "email-github-anda@contoh.com"
+git config --global user.name "allawimandan"
+git config --global user.email "ajengansubang@gmail.com"
 ```
 
-Emailnya sebaiknya sama dengan yang dipakai di GitHub.
-
-**Berhasil kalau:** `git config --global user.name` menampilkan nama Anda.
+Nama itu yang muncul sebagai penulis tiap perubahan di GitHub. Kalau ingin
+nama asli, jalankan ulang baris pertama dengan nama Anda.
 
 ---
 
-## Bagian 1 — Naikkan situs ke GitHub (10 menit)
+## Bagian 1 — Naikkan situs ke GitHub ✅ SELESAI
 
 ### 1.1 Buat repositori kosong
 
 1. Buka `github.com` → klik tanda **+** di kanan atas → **New repository**
 2. **Repository name:** `konsultasifiqih`
 3. Pilih **Private** (boleh juga Public — isinya memang untuk umum)
-4. **JANGAN** centang *Add a README file*, *Add .gitignore*, maupun *Choose a
-   license*. Repositori harus benar-benar kosong, kalau tidak nanti bentrok.
+4. Sebaiknya **jangan** centang *Add a README file* — kalau terlanjur
+   tercentang, riwayatnya perlu digabung dulu sebelum bisa dikirim
+   (ini yang terjadi kemarin dan sudah dibereskan).
 5. Klik **Create repository**
 
 ### 1.2 Kirim berkasnya
@@ -61,7 +65,7 @@ git init
 git add .
 git commit -m "Situs arsip konsultasifiqih.com"
 git branch -M main
-git remote add origin https://github.com/NAMA-ANDA/konsultasifiqih.git
+git remote add origin https://github.com/allawimandan/konsultasifiqih.git
 git push -u origin main
 ```
 
@@ -76,7 +80,7 @@ folder `data/`, `sumber/`, `tulisan/`, dan `README.md`.
 
 ---
 
-## Bagian 2 — Sambungkan ke Cloudflare Pages (10 menit)
+## Bagian 2 — Sambungkan ke Cloudflare Pages ← MULAI DI SINI
 
 Bagian ini menggantikan cara unggah ZIP. Setelah ini, setiap perubahan di
 GitHub otomatis membangun ulang situs.
@@ -218,7 +222,7 @@ Buka `situs.json` di folder situs ini (Notepad cukup), isi tiga nilainya:
 
 ```json
 {
-  "repo_github": "NAMA-ANDA/konsultasifiqih",
+  "repo_github": "allawimandan/konsultasifiqih",
   "cabang": "main",
   "oauth_base_url": "https://konsultasifiqih-oauth.NAMA-AKUN-CF.workers.dev"
 }
@@ -325,4 +329,4 @@ git push
 | Editor | `https://konsultasifiqih.com/admin/` |
 | Alamat sementara Pages | `https://konsultasifiqih.pages.dev` |
 | Worker login | `https://konsultasifiqih-oauth.NAMA-AKUN-CF.workers.dev` |
-| Repositori | `https://github.com/NAMA-ANDA/konsultasifiqih` |
+| Repositori | `https://github.com/allawimandan/konsultasifiqih` |
