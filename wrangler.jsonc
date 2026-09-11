@@ -1,0 +1,20 @@
+{
+  // Konfigurasi untuk Cloudflare Workers (alur "Connect GitHub" + npx wrangler deploy).
+  // Situs ini murni statis: tidak ada "main", hanya folder hasil build.
+  "name": "konsultasifiqih",
+  "compatibility_date": "2026-09-11",
+
+  "assets": {
+    // hasil "python bangun_situs.py"
+    "directory": "./keluaran",
+
+    // /nama-artikel/ dilayani dari /nama-artikel/index.html
+    "html_handling": "auto-trailing-slash",
+
+    // alamat yang tidak ada -> halaman 404.html buatan sendiri
+    "not_found_handling": "404-page"
+  }
+
+  // Catatan: _redirects (212 aturan) dan _headers ikut di dalam ./keluaran
+  // dan dibaca otomatis oleh Workers — tidak perlu didaftarkan di sini.
+}

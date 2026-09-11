@@ -96,15 +96,20 @@ GitHub otomatis membangun ulang situs.
 
 ### 2.2 Isi pengaturan build
 
+Cloudflare kini memakai alur **Workers**, jadi kolomnya *Deploy command*,
+bukan *Build output directory*:
+
 | Kolom | Isi |
 |---|---|
 | Project name | `konsultasifiqih` |
 | Production branch | `main` |
-| Framework preset | **None** |
 | Build command | `pip install -r requirements.txt && python bangun_situs.py` |
-| Build output directory | `keluaran` |
+| Deploy command | `npx wrangler deploy` (biarkan apa adanya) |
 
-Klik **Save and Deploy**. Build pertama makan waktu 1–3 menit.
+Folder hasil build tidak diisikan di layar ini — sudah ditulis di berkas
+`wrangler.jsonc` di akar repositori (`"directory": "./keluaran"`).
+
+Klik **Deploy**. Build pertama makan waktu 1–3 menit.
 
 **Berhasil kalau:** statusnya *Success*, dan alamat
 `konsultasifiqih.pages.dev` sudah menampilkan situsnya lengkap dengan artikel.
@@ -118,10 +123,12 @@ Klik **Save and Deploy**. Build pertama makan waktu 1–3 menit.
 Kalau sebelumnya Anda sudah membuat proyek Pages dari unggahan ZIP, domainnya
 masih menempel di proyek lama. Lepas dulu:
 
-1. Buka proyek Pages yang **lama** → *Custom domains* → hapus
-   `konsultasifiqih.com` dan `www.konsultasifiqih.com`
-2. Buka proyek Pages yang **baru** → *Custom domains* → **Set up a custom
-   domain** → isi `konsultasifiqih.com` → ulangi untuk `www.konsultasifiqih.com`
+Buka Worker `konsultasifiqih` → **Settings** → **Domains & Routes** →
+**Add** → *Custom domain* → isi `konsultasifiqih.com`. Ulangi untuk
+`www.konsultasifiqih.com`.
+
+Di akun Anda belum ada proyek Pages lama, jadi tidak ada domain yang perlu
+dilepas lebih dulu.
 
 Cloudflare mengurus DNS dan sertifikat HTTPS sendiri.
 
