@@ -4,6 +4,15 @@
   "name": "konsultasifiqih",
   "compatibility_date": "2026-09-11",
 
+  // Domain dipasang otomatis saat deploy — tidak perlu diklik di dasbor.
+  // Catatan: custom domain TIDAK BISA dibuat di hostname yang masih punya
+  // record CNAME. "www" belum dimasukkan karena record lamanya masih ada;
+  // hapus dulu CNAME www di DNS, baru barisnya boleh diaktifkan.
+  "routes": [
+    { "pattern": "konsultasifiqih.com", "custom_domain": true }
+    // , { "pattern": "www.konsultasifiqih.com", "custom_domain": true }
+  ],
+
   "assets": {
     // hasil "python bangun_situs.py"
     "directory": "./keluaran",
