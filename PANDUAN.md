@@ -15,10 +15,9 @@ Perkiraan waktu: **40–60 menit**, sudah termasuk menunggu propagasi.
 Nama tombol di GitHub dan Cloudflare kadang bergeser sedikit. Kalau tulisan di
 layar tidak persis sama, cari yang maknanya sama — alurnya tetap.
 
-> **Satu-satunya kata yang masih harus Anda ganti sendiri adalah
-> `NAMA-AKUN-CF`** (subdomain workers.dev akun Cloudflare Anda, muncul mulai
-> Bagian 3). Selain itu, semua perintah sudah terisi dan bisa disalin apa
-> adanya.
+> **Tidak ada lagi yang perlu Anda ganti.** Username GitHub
+> (`allawimandan`) dan subdomain Cloudflare (`ajengansubang.workers.dev`)
+> sudah terisi di seluruh perintah dan alamat di bawah.
 
 ---
 
@@ -88,11 +87,12 @@ GitHub otomatis membangun ulang situs.
 ### 2.1 Buat proyek Pages
 
 1. Buka `dash.cloudflare.com`
-2. Menu kiri → **Workers & Pages** → tombol **Create**
-3. Pilih tab **Pages** → **Connect to Git**
-4. Klik **Connect GitHub**, izinkan Cloudflare mengakses akun Anda
-   (boleh pilih *Only select repositories* → centang `konsultasifiqih` saja)
-5. Pilih repositori `konsultasifiqih` → **Begin setup**
+2. Menu kiri → **Workers & Pages** → tombol biru **Create application**
+3. Pada panel *Make something new*, pilih **Connect GitHub**
+   (bukan *Upload your static files* — itu cara ZIP yang lama)
+4. Izinkan Cloudflare mengakses akun GitHub Anda; boleh pilih
+   *Only select repositories* → centang `konsultasifiqih` saja
+5. Pilih repositori `konsultasifiqih`, lanjutkan ke pengaturan build
 
 ### 2.2 Isi pengaturan build
 
@@ -142,13 +142,12 @@ dilakukan murni dari peramban** — harus ada server kecil yang memegang rahasia
 Tentukan dulu nama Worker-nya. Pakai `konsultasifiqih-oauth`. Alamatnya nanti:
 
 ```
-https://konsultasifiqih-oauth.NAMA-AKUN-CF.workers.dev
+https://konsultasifiqih-oauth.ajengansubang.workers.dev
 ```
 
-`NAMA-AKUN-CF` adalah subdomain workers.dev akun Cloudflare Anda. Bisa dilihat
-di **Workers & Pages** → panel kanan, tertulis *your-subdomain*`.workers.dev`.
-**Catat dulu alamat lengkapnya**, karena dipakai di dua tempat dan harus sama
-persis.
+Subdomain `ajengansubang` sudah dipastikan dari dasbor Cloudflare Anda
+(**Workers & Pages** → panel *Account details*). Alamat di atas dipakai di
+dua tempat — Bagian 3.1 dan Bagian 5.1 — dan harus sama persis.
 
 ### 3.1 Buat OAuth App
 
@@ -161,7 +160,7 @@ persis.
 |---|---|
 | Application name | `konsultasifiqih CMS` |
 | Homepage URL | `https://konsultasifiqih.com` |
-| Authorization callback URL | `https://konsultasifiqih-oauth.NAMA-AKUN-CF.workers.dev/callback` |
+| Authorization callback URL | `https://konsultasifiqih-oauth.ajengansubang.workers.dev/callback` |
 
 5. **Register application**
 
@@ -191,7 +190,7 @@ Simpan keduanya sementara di Notepad.
 6. Klik **Deploy**
 
 **Berhasil kalau:** membuka
-`https://konsultasifiqih-oauth.NAMA-AKUN-CF.workers.dev` di peramban
+`https://konsultasifiqih-oauth.ajengansubang.workers.dev` di peramban
 menampilkan tulisan *"Server OAuth Decap CMS untuk konsultasifiqih.com."*
 
 Kalau yang muncul *"Worker belum diberi GITHUB_CLIENT_ID…"*, berarti Worker-nya
@@ -224,7 +223,7 @@ Buka `situs.json` di folder situs ini (Notepad cukup), isi tiga nilainya:
 {
   "repo_github": "allawimandan/konsultasifiqih",
   "cabang": "main",
-  "oauth_base_url": "https://konsultasifiqih-oauth.NAMA-AKUN-CF.workers.dev"
+  "oauth_base_url": "https://konsultasifiqih-oauth.ajengansubang.workers.dev"
 }
 ```
 
@@ -328,5 +327,5 @@ git push
 | Situs | `https://konsultasifiqih.com` |
 | Editor | `https://konsultasifiqih.com/admin/` |
 | Alamat sementara Pages | `https://konsultasifiqih.pages.dev` |
-| Worker login | `https://konsultasifiqih-oauth.NAMA-AKUN-CF.workers.dev` |
+| Worker login | `https://konsultasifiqih-oauth.ajengansubang.workers.dev` |
 | Repositori | `https://github.com/allawimandan/konsultasifiqih` |
