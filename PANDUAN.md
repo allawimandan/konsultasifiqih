@@ -79,7 +79,7 @@ folder `data/`, `sumber/`, `tulisan/`, dan `README.md`.
 
 ---
 
-## Bagian 2 — Sambungkan ke Cloudflare Pages ← MULAI DI SINI
+## Bagian 2 — Sambungkan ke Cloudflare ✅ SELESAI (tinggal pasang domain)
 
 Bagian ini menggantikan cara unggah ZIP. Setelah ini, setiap perubahan di
 GitHub otomatis membangun ulang situs.
@@ -112,7 +112,9 @@ Folder hasil build tidak diisikan di layar ini — sudah ditulis di berkas
 Klik **Deploy**. Build pertama makan waktu 1–3 menit.
 
 **Berhasil kalau:** statusnya *Success*, dan alamat
-`konsultasifiqih.pages.dev` sudah menampilkan situsnya lengkap dengan artikel.
+`https://konsultasifiqih.ajengansubang.workers.dev` sudah menampilkan situsnya.
+(Perhatikan: subdomain akun ikut di alamatnya — bukan
+`konsultasifiqih.workers.dev` saja.)
 
 > Kalau build gagal dengan pesan soal Python, buka *Settings* → *Variables and
 > Secrets* → tambah variabel `PYTHON_VERSION` berisi `3.13.3`, lalu *Retry
@@ -141,7 +143,7 @@ halaman "Account Suspended".
 
 ---
 
-## Bagian 3 — Daftarkan OAuth App di GitHub (5 menit)
+## Bagian 3 — Daftarkan OAuth App di GitHub (5 menit) ← BERIKUTNYA
 
 Langkah ini dan berikutnya dibutuhkan karena GitHub **tidak mengizinkan login
 dilakukan murni dari peramban** — harus ada server kecil yang memegang rahasia.
