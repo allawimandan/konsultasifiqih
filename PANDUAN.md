@@ -183,7 +183,7 @@ Simpan keduanya sementara di Notepad.
 
 ---
 
-## Bagian 4 — Pasang Worker untuk login ← DI SINI SEKARANG
+## Bagian 4 — Pasang Worker untuk login ✅ SELESAI
 
 ### 4.1 Buat Worker
 
@@ -256,7 +256,7 @@ Cloudflare otomatis membangun ulang (1–3 menit).
 
 ---
 
-## Bagian 6 — Menulis artikel
+## Bagian 6 — Menulis artikel ← SEMUA SIAP, MULAI MENULIS
 
 ### 6A. Lewat editor (setelah Bagian 3–5 selesai)
 
