@@ -1,7 +1,7 @@
 ---
 judul: Hukum Menikahi Wanita Hamil Di Luar Nikah
 tanggal: 2026-04-28
-penulis: Allawimandan
+penulis: Ustadz Dr. H. Awwaluz Zikri, Lc. MA
 kategori:
   - Fiqih Nikah
 gambar: /gambar/hamili.jpg
