@@ -1,12 +1,12 @@
 ---
 judul: Puasa Asyura pada hari Sabtu
-tanggal: '2025-07-07'
-waktu_terbit: '2025-07-07T10:52:14+00:00'
+tanggal: 2025-07-07
 penulis: Allawimandan
 kategori:
-- Konsultasi Fiqh
-gambar: ''
-video: ''
+  - Konsultasi Fiqh
+gambar: /gambar/6-amalan-yang-merupakan-tanda-seseorang-akan-menjadi-orang-bahagia-dan-terhindar-dari-celaka.jpg
+video: ""
+waktu_terbit: 2025-07-07T10:52:14+00:00
 draf: false
 ---
 
