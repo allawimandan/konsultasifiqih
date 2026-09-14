@@ -238,6 +238,15 @@ def siapkan_baru(h):
     return re.sub(r'<p>(.*?)</p>', tandai, h, flags=re.S)
 
 
+GAMBAR_HILANG = []   # (slug, nama berkas) yang dirujuk tapi tidak ada
+
+
+def gambar_ada(nama):
+    """Berkas gambar sampul benar-benar ada di tulisan/gambar/ atau data/gambar/?"""
+    return bool(nama) and (os.path.isfile(os.path.join(GAMBAR_BARU, nama))
+                           or os.path.isfile(os.path.join(ARSIP, "gambar", nama)))
+
+
 def muat_tulisan_baru():
     """Baca tulisan/*.md dan ubah jadi artikel, sejajar dengan artikel arsip."""
     if not os.path.isdir(TULISAN):
@@ -285,6 +294,14 @@ def muat_tulisan_baru():
         teks = htmlmod.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', isi_html))).strip()
         isi_html = sematan + isi_html
 
+        # Gambar yang sudah dihapus dari pustaka media (tapi masih dirujuk artikel)
+        # jangan sampai jadi <img> ke alamat 404 — di kartu, sampul, maupun
+        # pratinjau WhatsApp/Facebook. Pakai gradasi dan beri tahu saat build.
+        gambar = os.path.basename(_teks(kepala.get("gambar")))
+        if gambar and not gambar_ada(gambar):
+            GAMBAR_HILANG.append((slug, gambar))
+            gambar = ""
+
         ringkas = _teks(kepala.get("ringkas")) or teks[:180]
         if len(ringkas) >= 180:
             ringkas = ringkas.rsplit(" ", 1)[0] + "…"
@@ -295,7 +312,7 @@ def muat_tulisan_baru():
             "kategori": kategori, "kat": kategori[0], "ringkas": ringkas,
             "kata": len(re.findall(r'\w+', teks)),
             # Decap menulis jalur penuh ("/gambar/catur.jpg"), tulis tangan cukup namanya
-            "video": bool(video), "gambar": os.path.basename(_teks(kepala.get("gambar"))),
+            "video": bool(video), "gambar": gambar,
             "kunci_gambar": "",
             "isi": isi_html, "teks": teks, "baru": True, "berkas": nama,
         })
@@ -821,7 +838,15 @@ collections:
         default: ['Fikih Ibadah']
         options:
 %s
-      - {name: gambar, label: Gambar sampul, widget: image, required: false, allow_multiple: false}
+      - name: gambar
+        label: Gambar sampul
+        widget: image
+        required: false
+        allow_multiple: false
+        hint: >-
+          Unggah atau pilih gambar, lalu pastikan pilihannya benar-benar
+          dimasukkan sebelum Publish. Jangan menghapus gambar di menu Media yang
+          masih dipakai artikel. Ukuran ideal di bawah 500 KB.
       - name: video
         label: Video YouTube (opsional)
         widget: string
@@ -955,6 +980,10 @@ if __name__ == "__main__":
     print("Artikel      : %d  (tulisan/*.md)" % len(POS))
     if DRAF:
         print("   (draf, belum diterbitkan: %s)" % ", ".join(DRAF))
+    if GAMBAR_HILANG:
+        print("!! gambar sampul dirujuk tapi berkasnya tidak ada (tampil gradasi):")
+        for slug, nama in GAMBAR_HILANG:
+            print("     /%s/  ->  %s" % (slug, nama))
     print("Kategori     : %d" % len(KATEGORI))
     print("Halaman blog : %d" % hal_blog)
     print("Gambar       : %d" % n_gambar)
