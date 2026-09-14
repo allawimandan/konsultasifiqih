@@ -1,11 +1,25 @@
-Folder ini tempat menulis artikel baru.
+Folder ini berisi SEMUA artikel situs: 239 artikel arsip (dipindahkan dari
+data/artikel.json pada 14 September 2026) dan artikel baru.
 
+Satu berkas .md = satu artikel. Nama berkas = alamatnya:
+  tulisan/hukum-mencabut-uban.md  ->  konsultasifiqih.com/hukum-mencabut-uban/
+
+Cara paling mudah menyunting atau menambah artikel:
+  https://konsultasifiqih.com/admin/
+
+Dari komputer:
   py artikel_baru.py "Judul Artikel"   -> membuat draf .md di sini
-  py bangun_situs.py                   -> membangun ulang situs
-  py paketkan.py                       -> membungkus jadi ZIP untuk Cloudflare
+  py bangun_situs.py                   -> membangun ulang situs untuk dicek
+  git add . , git commit , git push    -> Cloudflare membangun & menayangkan
 
-Taruh gambar artikel di folder gambar/, lalu tulis nama berkasnya
-pada baris "gambar:" di kepala artikel.
+Gambar artikel ada di folder gambar/. Tulis "/gambar/nama-berkas.jpg" pada
+baris "gambar:" di kepala artikel.
 
 Berkas .md yang namanya diawali garis bawah (_) diabaikan.
-Artikel dengan "draf: ya" tidak ikut diterbitkan.
+Artikel dengan "draf: true" (atau "draf: ya") tidak ikut diterbitkan.
+
+JANGAN ganti nama berkas artikel lama: alamatnya ikut berubah dan tautan lama
+yang beredar di internet jadi mati.
+
+JANGAN jalankan "py migrasi_ke_markdown.py --timpa-isi" lagi: perintah itu
+menulis ulang isi semua artikel arsip dan menghapus suntingan dari editor.

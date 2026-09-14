@@ -258,6 +258,11 @@ Cloudflare otomatis membangun ulang (1–3 menit).
 
 ## Bagian 6 — Menulis artikel ← SEMUA SIAP, MULAI MENULIS
 
+> **Artikel lama juga bisa disunting.** Ke-239 artikel arsip sudah berupa
+> berkas di `tulisan/`, jadi semuanya muncul di `/admin/` → **Artikel** dan
+> bisa diubah atau dihapus seperti artikel baru. Rinciannya di README bagian
+> *Menyunting artikel lama*.
+
 ### 6A. Lewat editor (setelah Bagian 3–5 selesai)
 
 1. Buka `https://konsultasifiqih.com/admin/`

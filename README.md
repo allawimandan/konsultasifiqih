@@ -217,6 +217,7 @@ daftar pakai tanda minus, kutipan pakai tanda lebih besar.
 | `penulis` | bebas |
 | `kategori` | pisahkan dengan koma; kategori baru dibuat otomatis |
 | `gambar` | opsional, taruh berkasnya di `tulisan/gambar/` |
+| `video` | opsional, tautan YouTube (biasa, youtu.be, atau embed); tampil di atas isi |
 | `draf` | `ya` = belum terbit, `tidak` = ikut terbit |
 
 Paragraf berbahasa Arab tidak perlu ditandai apa pun — cukup ditulis sebagai
@@ -240,11 +241,32 @@ didaftarkan manual.
 > Zikri. Isi hanya dengan tulisan yang benar-benar beliau tulis atau setujui —
 > jangan menerbitkan jawaban fikih atas nama beliau tanpa izin.
 
-## Memperbarui isi lama
+## Menyunting artikel lama
 
-Artikel arsip ada di `../konsultasifiqih-arsip/artikel.json`. Untuk mengubah
-tampilan, sunting `sumber/gaya.css`. Setelah itu jalankan ulang
-`py bangun_situs.py` dan `py paketkan.py`.
+Sejak 14 September 2026, ke-239 artikel arsip berupa berkas Markdown di
+`tulisan/`, sama seperti artikel baru. Semuanya bisa disunting atau dihapus
+lewat `konsultasifiqih.com/admin/` → **Artikel**.
+
+Pemindahan dikerjakan sekali oleh `migrasi_ke_markdown.py`, lalu dibandingkan
+dengan situs sebelum migrasi: judul, tanggal, kategori, sampul, video, navigasi
+artikel, urutan di beranda/blog/kategori/arsip, `sitemap.xml`, `_redirects`,
+dan indeks cari identik; teks isi identik 100% di 234 artikel, lima sisanya
+hanya berbeda satu spasi sebelum koma.
+
+Yang perlu diingat:
+
+- **`data/artikel.json` tidak lagi dibaca build.** Berkas itu disimpan hanya
+  sebagai arsip mentah hasil Wayback. Kalau dibaca, artikel yang dihapus lewat
+  editor akan muncul kembali.
+- Penomoran yang di arsip berupa teks biasa ditulis `1\.` di Markdown, supaya
+  tidak berubah menjadi daftar otomatis yang nomornya mulai ulang dari 1.
+  Daftar bernomor yang memang daftar (9 artikel) tetap berupa daftar.
+- **Jangan jalankan `py migrasi_ke_markdown.py --timpa-isi` lagi.** Perintah itu
+  menulis ulang isi semua artikel arsip dan menghapus suntingan dari editor.
+- **Jangan ganti nama berkas artikel lama** — alamatnya ikut berubah dan
+  tautan lama yang beredar jadi mati.
+
+Untuk mengubah tampilan, sunting `sumber/gaya.css`.
 
 ## Isi folder
 
@@ -252,15 +274,16 @@ tampilan, sunting `sumber/gaya.css`. Setelah itu jalankan ulang
 |---|---|
 | `artikel_baru.py` | buat draf artikel baru |
 | `bangun_situs.py` | generator situs |
+| `migrasi_ke_markdown.py` | sekali jalan: arsip JSON → `tulisan/*.md` (sudah dijalankan) |
 | `paketkan.py` | bungkus `keluaran/` jadi ZIP |
 | `situs.json` | nama repo GitHub + alamat OAuth (untuk editor `/admin/`) |
-| `tulisan/` | artikel baru (Markdown) + `tulisan/gambar/` |
-| `data/` | arsip 239 artikel + 116 gambar (sumber bangunan) |
+| `tulisan/` | **semua** artikel (239 arsip + tulisan baru) + `tulisan/gambar/` |
+| `data/` | arsip mentah Wayback (tidak dibaca build), halaman statis, logo, daftar lampiran |
 | `sumber/gaya.css` | seluruh tampilan |
 | `sumber/situs.js` | mode gelap, pencarian, gambar cadangan |
 | `sumber/admin.html` | halaman editor Decap CMS |
 | `oauth-worker/` | Worker Cloudflare untuk proses masuk GitHub |
-| `requirements.txt` | dependensi build di Cloudflare (`markdown`) |
+| `requirements.txt` | dependensi build di Cloudflare (`markdown`, `pyyaml`) |
 | `keluaran/` | situs jadi — hasil build, tidak masuk Git |
 | `keluaran/_redirects` | 214 pengalihan URL lama WordPress |
 | `keluaran/_headers` | aturan cache Cloudflare |

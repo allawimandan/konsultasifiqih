@@ -119,34 +119,18 @@ def bersihkan(h, slug, berkas_gambar, kunci_utama):
 
 # ---------------------------------------------------------------- muat data
 
-artikel = json.load(open(os.path.join(ARSIP, "artikel.json"), encoding="utf-8"))
+# Seluruh artikel kini berupa berkas tulisan/*.md (hasil migrasi_ke_markdown.py)
+# supaya bisa disunting di /admin/. data/artikel.json disimpan hanya sebagai
+# arsip mentah Wayback dan SENGAJA tidak dibaca lagi — kalau dibaca, artikel
+# yang dihapus lewat editor akan muncul kembali dari sana.
 halaman_statis = json.load(open(os.path.join(ARSIP, "halaman.json"), encoding="utf-8"))
 gambar_lokal = json.load(open(os.path.join(ARSIP, "gambar_lokal.json"), encoding="utf-8"))
-peta_gambar = json.load(open(os.path.join(ARSIP, "peta_gambar.json"), encoding="utf-8"))
 
 LEWATI_HALAMAN = {"sample-page", "sample-page-2", "laman-contoh"}
 halaman_statis = [h for h in halaman_statis if h["slug"] not in LEWATI_HALAMAN]
 
-# catatan per artikel yang dipakai berulang kali
-POS = []
-for r in artikel:
-    berkas = gambar_lokal.get(r["slug"], "")
-    kunci = kunci_gambar((peta_gambar.get(r["slug"]) or {}).get("asli", ""))
-    kat = (r["kategori"] or ["Artikel"])[0]
-    ringkas = re.sub(r'\s+', ' ', r["isi_teks"])[:180].strip()
-    if len(ringkas) == 180:
-        ringkas = ringkas.rsplit(" ", 1)[0] + "…"
-    POS.append({
-        "slug": r["slug"], "judul": r["judul"], "tanggal": r["tanggal_terbit"],
-        "penulis": r["penulis"], "kategori": r["kategori"] or ["Artikel"], "kat": kat,
-        "ringkas": ringkas, "kata": r["jumlah_kata"], "video": r["jenis"] == "video",
-        "gambar": berkas, "kunci_gambar": kunci,
-        "isi": bersihkan(r["isi_html"], r["slug"], berkas, kunci),
-        "teks": r["isi_teks"],
-    })
 
-
-# ------------------------------------------------- artikel baru (tulisan/*.md)
+# ------------------------------------------------------ artikel (tulisan/*.md)
 
 TULISAN = os.path.join(AKAR, "tulisan")
 GAMBAR_BARU = os.path.join(TULISAN, "gambar")
@@ -159,7 +143,7 @@ def _bersih_nilai(v):
     return v.strip()
 
 
-def _depan(teks):
+def _depan_sederhana(teks):
     """Baca front-matter di antara dua garis '---'.
 
     Menerima gaya tulis tangan (`kategori: A, B`) maupun gaya yang ditulis
@@ -185,6 +169,45 @@ def _depan(teks):
     for k in [x for x in kepala if x.endswith("__daftar")]:
         kepala[k[:-9]] = ", ".join(kepala.pop(k))
     return kepala, m.group(2)
+
+
+def _depan(teks):
+    """Pisahkan front-matter YAML dan isi Markdown.
+
+    Decap menulis YAML sungguhan (judul bertitik dua dikutip, daftar berbutir,
+    boolean, tanggal), jadi dibaca dengan PyYAML. Parser sederhana hanya
+    cadangan kalau PyYAML tidak terpasang.
+    """
+    m = re.match(r'^\ufeff?---\s*\n(.*?)\n---\s*\n?(.*)$', teks, re.S)
+    if not m:
+        return {}, teks
+    try:
+        import yaml
+    except ImportError:
+        return _depan_sederhana(teks)
+    try:
+        kepala = yaml.safe_load(m.group(1)) or {}
+    except yaml.YAMLError as e:
+        print("!! front-matter tidak terbaca (%s), pakai parser sederhana" % e)
+        return _depan_sederhana(teks)
+    if not isinstance(kepala, dict):
+        return _depan_sederhana(teks)
+    return {str(k).lower(): v for k, v in kepala.items()}, m.group(2)
+
+
+def _teks(v):
+    return "" if v is None else str(v).strip()
+
+
+def ke_embed(url):
+    """Tautan YouTube biasa / youtu.be -> alamat embed. Selain itu apa adanya."""
+    u = url.strip()
+    if u.startswith("//"):
+        u = "https:" + u
+    m = (re.match(r'^https?://(?:www\.|m\.)?youtube\.com/watch\?(?:.*&)?v=([\w-]{6,})', u)
+         or re.match(r'^https?://youtu\.be/([\w-]{6,})', u)
+         or re.match(r'^https?://(?:www\.)?youtube\.com/shorts/([\w-]{6,})', u))
+    return "https://www.youtube.com/embed/%s" % m.group(1) if m else u
 
 
 def _boolean(v):
@@ -237,34 +260,49 @@ def muat_tulisan_baru():
             draf.append(slug)
             continue
 
-        judul = kepala.get("judul") or slug.replace("-", " ").title()
+        judul = _teks(kepala.get("judul")) or slug.replace("-", " ").title()
+
+        # "tanggal" yang disunting menang; jam asli hanya dipakai kalau harinya
+        # masih sama, supaya urutan artikel sehari tetap seperti situs lama
         tanggal = _tanggal(kepala.get("tanggal"))
-        kategori = [k.strip() for k in (kepala.get("kategori") or "Fikih").split(",") if k.strip()]
+        waktu = _tanggal(kepala.get("waktu_terbit"))
+        if waktu and waktu[:10] == tanggal[:10]:
+            tanggal = waktu
+
+        kat_mentah = kepala.get("kategori") or "Fikih"
+        if isinstance(kat_mentah, (list, tuple)):
+            kategori = [_teks(k) for k in kat_mentah if _teks(k)]
+        else:
+            kategori = [k.strip() for k in str(kat_mentah).split(",") if k.strip()]
+        kategori = kategori or ["Artikel"]
+
+        video = [ke_embed(u) for u in re.split(r'[\s,]+', _teks(kepala.get("video")))
+                 if re.match(r'^(https?:)?//', u)]
+        sematan = "".join('<iframe src="%s" loading="lazy" allowfullscreen title="Video"></iframe>'
+                          % aman(u) for u in video)
 
         isi_html = siapkan_baru(md_lib.markdown(badan, extensions=["extra", "sane_lists"]))
         teks = htmlmod.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', isi_html))).strip()
+        isi_html = sematan + isi_html
 
-        ringkas = kepala.get("ringkas") or teks[:180]
+        ringkas = _teks(kepala.get("ringkas")) or teks[:180]
         if len(ringkas) >= 180:
             ringkas = ringkas.rsplit(" ", 1)[0] + "…"
 
         baru.append({
             "slug": slug, "judul": judul, "tanggal": tanggal,
-            "penulis": kepala.get("penulis") or "Ustadz Dr. Awwaluz Zikri, Lc. MA",
+            "penulis": _teks(kepala.get("penulis")) or "Ustadz Dr. Awwaluz Zikri, Lc. MA",
             "kategori": kategori, "kat": kategori[0], "ringkas": ringkas,
             "kata": len(re.findall(r'\w+', teks)),
             # Decap menulis jalur penuh ("/gambar/catur.jpg"), tulis tangan cukup namanya
-            "video": False, "gambar": os.path.basename(kepala.get("gambar", "").strip()),
+            "video": bool(video), "gambar": os.path.basename(_teks(kepala.get("gambar"))),
             "kunci_gambar": "",
             "isi": isi_html, "teks": teks, "baru": True, "berkas": nama,
         })
     return baru, draf
 
 
-TULISAN_BARU, DRAF = muat_tulisan_baru()
-_slug_arsip = {p["slug"] for p in POS}
-BENTROK = [p["slug"] for p in TULISAN_BARU if p["slug"] in _slug_arsip]
-POS = [p for p in POS if p["slug"] not in {q["slug"] for q in TULISAN_BARU}] + TULISAN_BARU
+POS, DRAF = muat_tulisan_baru()
 
 POS.sort(key=lambda p: p["tanggal"] or "", reverse=True)
 POPULER = sorted(POS, key=lambda p: -p["kata"])[:5]
@@ -784,6 +822,14 @@ collections:
         options:
 %s
       - {name: gambar, label: Gambar sampul, widget: image, required: false, allow_multiple: false}
+      - name: video
+        label: Video YouTube (opsional)
+        widget: string
+        required: false
+        hint: >-
+          Tempel tautan YouTube (tautan biasa, youtu.be, atau embed). Lebih dari
+          satu dipisah spasi. Video tampil di atas isi artikel.
+      - {name: waktu_terbit, label: Waktu terbit asli, widget: hidden, required: false}
       - name: draf
         label: Simpan sebagai draf (belum tampil di situs)
         widget: boolean
@@ -882,6 +928,9 @@ def salin_aset():
 # ---------------------------------------------------------------- jalankan
 
 if __name__ == "__main__":
+    if not POS:
+        raise SystemExit("Tidak ada artikel di tulisan/*.md — build dihentikan supaya situs "
+                         "tidak tertimpa versi kosong.")
     if os.path.exists(KELUAR):
         shutil.rmtree(KELUAR)
     os.makedirs(KELUAR)
@@ -903,14 +952,9 @@ if __name__ == "__main__":
     berkas = sum(len(f) for _, _, f in os.walk(KELUAR))
     besar = sum(os.path.getsize(os.path.join(d, f))
                 for d, _, fs in os.walk(KELUAR) for f in fs)
-    print("Artikel      : %d  (arsip %d + tulisan baru %d)"
-          % (len(POS), len(POS) - len(TULISAN_BARU), len(TULISAN_BARU)))
-    for p in TULISAN_BARU:
-        print("   + /%s/  — %s" % (p["slug"], p["judul"]))
+    print("Artikel      : %d  (tulisan/*.md)" % len(POS))
     if DRAF:
         print("   (draf, belum diterbitkan: %s)" % ", ".join(DRAF))
-    if BENTROK:
-        print("!! slug bentrok dgn arsip, versi baru yang dipakai: %s" % ", ".join(BENTROK))
     print("Kategori     : %d" % len(KATEGORI))
     print("Halaman blog : %d" % hal_blog)
     print("Gambar       : %d" % n_gambar)
