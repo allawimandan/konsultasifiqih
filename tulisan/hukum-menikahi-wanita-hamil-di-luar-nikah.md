@@ -1,13 +1,13 @@
 ---
 judul: Hukum Menikahi Wanita Hamil Di Luar Nikah
-tanggal: '2026-04-28'
-waktu_terbit: '2026-04-28T07:41:13+00:00'
+tanggal: 2026-04-28
 penulis: Allawimandan
 kategori:
-- Fiqih Nikah
-gambar: ''
-video: ''
-draf: false
+  - Fiqih Nikah
+gambar: /gambar/hamili.jpg
+video: ""
+waktu_terbit: 2026-04-28T07:41:13+00:00
+draf: true
 ---
 
 Zina adalah perbuatan yang sangat tercela, terkutuk, dan ia termasuk dosa besar.  
